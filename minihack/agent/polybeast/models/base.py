@@ -134,6 +134,16 @@ class Crop(nn.Module):
             self.width_grid = self.width_grid.to(device)
             self.height_grid = self.height_grid.to(device)
 
+    def to(self, *args, **kwargs):
+        super().to(*args, **kwargs)
+        print(f"Converting crop") # to {(*args, **kwargs)}")
+        #import time
+        #time.sleep(30)
+
+        self.width_grid = self.width_grid.to(*args, **kwargs)
+        self.height_grid = self.height_grid.to(*args, **kwargs)
+        return self
+
     def _step_to_range(self, step, num_steps):
         return torch.tensor([step * (i - num_steps // 2) for i in range(num_steps)])
 
@@ -395,6 +405,14 @@ class BaseNet(NetHackNet):
         self.policy = nn.Linear(self.h_dim, self.num_actions)
         self.baseline = nn.Linear(self.h_dim, 1)
 
+    def to(self, *args, **kwargs):
+        super().to(*args, **kwargs)
+        print("In BaseNet to")
+        #import time
+        #time.sleep(30)
+        self.crop.to(*args, **kwargs)  # TODO: why isn't this happening automatically?
+        return self
+        
     def initial_state(self, batch_size=1):
         if not self.use_lstm:
             return tuple()

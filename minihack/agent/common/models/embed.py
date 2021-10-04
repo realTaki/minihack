@@ -171,6 +171,13 @@ class GlyphEmbedding(nn.Module):
 
     def glyphs_to_idgroup(self, glyphs):
         T, B, H, W = glyphs.shape
+
+        #glyphs = glyphs.to(self.id_pairs_table.device)
+        #print(f"{self.id_pairs_table.device}, {glyphs.device}")
+        #import time
+        #time.sleep(30)
+
+
         ids_groups = self.id_pairs_table.index_select(0, glyphs.view(-1).long())
         ids = ids_groups.select(1, 0).view(T * B, H, W).long()
         groups = ids_groups.select(1, 1).view(T * B, H, W).long()
