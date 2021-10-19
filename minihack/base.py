@@ -216,6 +216,13 @@ class MiniHack(NetHackStaircase):
 
         # MiniHack's observation keys are kept separate
         self._minihack_obs_keys = list(observation_keys)
+
+        # But we still need to request the subset of keys from NLE that are applicable
+        nle_keys = [item[0] for item in NLE_SPACE_ITEMS]
+        nle_observation_keys = [key for key in observation_keys if key in nle_keys]
+        if "screen_descriptions" not in nle_observation_keys:
+            nle_observation_keys += ["screen_descriptions"]
+
         # Handle RGB pixel observations
         if any("pixel" in key for key in self._minihack_obs_keys):
             self._glyph_mapper = GlyphMapper()
@@ -232,7 +239,7 @@ class MiniHack(NetHackStaircase):
 
         self._level_seeds = seeds
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs, observation_keys=nle_observation_keys)
 
         # Patch the nhdat library by compling the given .des file
         self.update(des_file)
